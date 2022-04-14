@@ -1,21 +1,11 @@
 
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image } from 'react-native';
 
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 50,
-  },
-  stretch: {
-    width: 150,
-    height: 200,
-    resizeMode: 'stretch',
-  },
-});
 
-const LoadImge = ({src}) => {
+const LoadImge = ({src , styles}) => {
   return (
-    <View style={styles.container}>
+    <View >
       <Image
         style={styles.stretch}
         source={{

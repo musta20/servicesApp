@@ -65,7 +65,7 @@ function MyTabs() {
       })}
     >
 
-      <Tab.Screen  style={styles.container} name="الرئيسية" component={Home} />
+      <Tab.Screen name="الرئيسية" component={Home} />
       <Tab.Screen name="الطلبات" component={Orders} />
       <Tab.Screen name="الملفات" component={Files} />
       <Tab.Screen name="المكاتب المفضلة" component={Like} />

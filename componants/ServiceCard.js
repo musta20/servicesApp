@@ -1,4 +1,7 @@
-import React from "react";
+import {React , useContext} from "react";
+import {DashboardContext} from "./context"
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import {
   StyleSheet,
   Platform,
@@ -8,70 +11,85 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
-  StatusBar,
   Image
 } from "react-native";
 //import LoadImge from "./LoadImge";
+console.log(Platform.OS)
 
-
-const URL ='http://10.0.2.2:8000';
-
-// 'http://127.0.0.1:8000';
-
-
-const RenderRowThree = ({ item }) => (
-  <TouchableOpacity
-    key={item.id}
-    style={stylesList.itemThreeContainer}
-   // onPress={() => this._openArticle(item)}
-  >
-    <View style={stylesList.itemThreeSubContainer}>
-      <Image source={{ uri: `${URL}/api/showPublicImge/${item.img_id}` }} style={stylesList.itemThreeImage} />
-      <View style={stylesList.itemThreeContent}>
-        <Text style={stylesList.itemThreeBrand}>{item.user.username}</Text>
-        <View>
-          <Text style={stylesList.itemThreeTitle}>{item.Title}</Text>
-          <Text style={stylesList.itemThreeSubtitle} numberOfLines={1}>
-            {item.Description}
-          </Text>
-        </View>
-        <View style={stylesList.itemThreeMetaContainer}>
-          {false && (
-            <View
-              style={[
-                stylesList.badge,
-                item.badge === 'NEW' && { backgroundColor: colors.green },
-              ]}
-            >
-              <Text
-                style={{ fontSize: 10, color: '#e3e3e3' }}
-                styleName="bright"
-              >
-                {item.badge}
-              </Text>
-            </View>
-          )}
-          <Text style={stylesList.itemThreePrice}>54 sar</Text>
-        </View>
-      </View>
-    </View>
-    <View style={stylesList.itemThreeHr} />
-  </TouchableOpacity>
-);
-
-
-const Item = ({ item }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{item.Title}</Text>
- 
-  </View>
-);
-
-const renderItem = ({ item }) => (
-  <RenderRowThree item={item} />
-);
+//const URL = Platform.OS === 'web' ? 'http://127.0.0.1:8000': 'http://10.0.2.2:8000';
+const URL ='http://127.0.0.1:8000';
+//const URL ='http://10.0.2.2:8000';
+ //'http://127.0.0.1:8000';
 
 const ServiceCard = ({ data }) => {
+  const Stack = createNativeStackNavigator();
+
+
+  const { navigation } = useContext(DashboardContext);
+
+
+
+
+  const RenderRowThree = ({ item }) => (
+
+    <TouchableOpacity
+      key={item.id}
+      style={stylesList.itemThreeContainer}
+      onPress={() => openArticle(item)}
+    >
+      <View style={stylesList.itemThreeSubContainer}>
+        <Image source={{ uri: `${URL}/api/showPublicImge/${item.img_id}` }} style={stylesList.itemThreeImage} />
+        <View style={stylesList.itemThreeContent}>
+          <Text style={stylesList.itemThreeBrand}>{item.user.username}</Text>
+          <View>
+            <Text style={stylesList.itemThreeTitle}>{item.Title}</Text>
+            <Text style={stylesList.itemThreeSubtitle} numberOfLines={1}>
+              {item.Description}
+            </Text>
+          </View>
+          <View style={stylesList.itemThreeMetaContainer}>
+            {false && (
+              <View
+                style={[
+                  stylesList.badge,
+                  item.badge === 'NEW' && { backgroundColor: colors.green },
+                ]}
+              >
+                <Text
+                  style={{ fontSize: 10, color: '#e3e3e3' }}
+                  styleName="bright"
+                >
+                  {item.badge}
+                </Text>
+              </View>
+            )}
+            <Text style={stylesList.itemThreePrice}>54 sar</Text>
+          </View>
+        </View>
+      </View>
+      <View style={stylesList.itemThreeHr} />
+    </TouchableOpacity>
+  );
+  
+  
+  
+  const renderItem = ({ item }) => (
+    <RenderRowThree       
+    item={item} />
+  );
+  
+  const openArticle = (item) => {
+  
+    console.log("open article")
+  
+    navigation.navigate('Admin' ,{
+      params: { item },
+    });
+//navigation.navigate('App', { screen: 'admin' });
+
+  
+  };
+  
 
   return <SafeAreaView style={styles.container}>
 
@@ -88,7 +106,7 @@ const styles = StyleSheet.create({
   container: {
 
     flex: 1,
-    paddingTop: StatusBar.currentHeight,
+    //paddingTop: StatusBar.currentHeight,
     marginHorizontal: 16,
     backgroundColor: "#ffffff"
 
@@ -207,6 +225,7 @@ const stylesList = StyleSheet.create({
     borderBottomColor:"#f1f1f1"
   },
   itemThreeSubContainer: {
+    margin:3,
     flexDirection: 'row',
     paddingVertical: 10,
   },
@@ -223,6 +242,10 @@ const stylesList = StyleSheet.create({
     //fontFamily: fonts.primaryRegular,
     fontSize: 14,
     color: '#617ae1',
+  },
+  demoButton: {
+    marginTop: 8,
+    marginBottom: 8,
   },
   itemThreeTitle: {
     //fontFamily: fonts.primaryBold,

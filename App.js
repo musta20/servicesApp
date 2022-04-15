@@ -1,12 +1,17 @@
+
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Profile from "./componants/Profile";
 import Home from "./componants/Home";
 import Orders from "./componants/Orders";
 import Files from "./componants/Files";
 import Like from "./componants/Like";
+import Admin from './componants/admin'
+import { createStackNavigator } from '@react-navigation/stack';
+
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet } from "react-native";
@@ -24,14 +29,14 @@ function MyTabs() {
           switch (route.name) {
             case 'الرئيسية':
               iconName = focused
-                ?'md-home-sharp' 
-                :'home-outline';
+                ? 'md-home-sharp'
+                : 'home-outline';
               break;
             case 'بياناتي':
               iconName = focused
                 ? 'user-circle'
                 : 'user-circle-o';
-               return <Icon name={iconName}  size={size} color={color}  />;
+              return <Icon name={iconName} size={size} color={color} />;
 
               break;
             case 'الطلبات':
@@ -75,19 +80,28 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer style={styles.container.backgroundColor} >
+      <Stack.Navigator>
 
-      <MyTabs  />
+        <Stack.Screen
+         options={{headerShown: false}}
+          name="MyTabs"
+          component={MyTabs}
+        />
+
+        <Stack.Screen name="Admin" component={Admin} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
- 
+
     backgroundColor: '#664d03',
 
   },
@@ -104,3 +118,4 @@ const styles = StyleSheet.create({
     fontSize: 24
   }
 });
+

@@ -4,13 +4,17 @@ import { StyleSheet } from "react-native";
 import * as React from 'react';
 import useSWR from 'swr';
 import ServiceCard from './ServiceCard';
-export default function HomeScreen() {
+import { DashboardContext } from './context'
+
+export default function HomeScreen({navigation}) {
 
   const { services , isLoding } =  getServices();
   
     return (
+<DashboardContext.Provider value={{ navigation }} >
+<ServiceCard  navigation={navigation} data={services}></ServiceCard>
 
-        <ServiceCard  data={services}></ServiceCard>
+        </DashboardContext.Provider>
             
  
         );
@@ -21,7 +25,7 @@ export default function HomeScreen() {
 
   const styles = StyleSheet.create({
     container: {
-   
+      //flex: 1,
       backgroundColor: '#664d03',
   
     },

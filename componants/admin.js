@@ -1,3 +1,5 @@
+import { React , useContext } from "react";
+
 import {
   StyleSheet,
   Platform,
@@ -8,21 +10,26 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
-import * as React from 'react';
-export default function Admin({ route }) {
-  console.log(route)
+
+//import { DashboardContext } from './context';
+
+
+export default function Admin({ route , navigation}) {
+
+  //const { navigation } = useContext(DashboardContext);
+
   const { item } = route.params.params
   const URL = 'http://127.0.0.1:8000';
   ///const URL ='http://10.0.2.2:8000';
 
-  //      
+  
+  
   return (
     <View style={stylesList.itemTwoContent}>
       <Image style={stylesList.itemTwoImage} source={{ uri: `${URL}/api/showPublicImge/${item.img_id}` }} />
       <TouchableOpacity
         key={item.id}
         style={stylesList.userName}
-      //  onPress={() => openArticle(item)}
       >
         <Text style={stylesList.itemTwoTitle}>@{item.user.username}</Text>
       </TouchableOpacity>
@@ -44,8 +51,8 @@ export default function Admin({ route }) {
           bordered
           color={"#198754"}
           rounded
-          onPress={() => Alert.alert('Right button pressed')}
-        />
+          onPress={() => navigation.navigate('Order' ,{params: { item }})}
+          />
 
                 </View>
             

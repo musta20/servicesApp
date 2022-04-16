@@ -15,7 +15,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet } from "react-native";
-
+import Order from './componants/PostOrder';
+import Login from './componants/login';
 //StyleSheet
 const Tab = createBottomTabNavigator();
 
@@ -86,6 +87,7 @@ export default function App() {
   return (
     <NavigationContainer style={styles.container.backgroundColor} >
       <Stack.Navigator>
+      <Stack.Screen name="دخول" component={Login} />
 
         <Stack.Screen
          options={{headerShown: false}}
@@ -93,7 +95,8 @@ export default function App() {
           component={MyTabs}
         />
 
-        <Stack.Screen name="Admin" component={Admin} />
+<Stack.Screen name="Admin" component={Admin} />
+<Stack.Screen name="Order" component={Order} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,7 +1,7 @@
 
-import { useRouter } from 'next/router'
+//import { useRouter } from 'next/router'
 import { useEffect } from 'react';
-import { useCookies } from 'react-cookie'
+//import { useCookies } from 'react-cookie'
 import fetcher from '../fetcher'
 
 

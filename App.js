@@ -10,6 +10,8 @@ import Orders from "./componants/Orders";
 import Files from "./componants/Files";
 import Like from "./componants/Like";
 import Admin from './componants/admin'
+import { AuthProvider} from './componants/context/AuthContext';
+import { AxiosProvider } from './componants/context/AxiosContext';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
@@ -85,10 +87,14 @@ const Stack = createStackNavigator();
 
 export default function App() {
   return (
+    <AuthProvider>
+      <AxiosProvider>
     <NavigationContainer style={styles.container.backgroundColor} >
       <Stack.Navigator>
+{/*      
       <Stack.Screen name="دخول" component={Login} />
 
+ */}
         <Stack.Screen
          options={{headerShown: false}}
           name="MyTabs"
@@ -99,6 +105,9 @@ export default function App() {
 <Stack.Screen name="Order" component={Order} />
       </Stack.Navigator>
     </NavigationContainer>
+    </AxiosProvider>
+    </AuthProvider>
+
   );
 }
 

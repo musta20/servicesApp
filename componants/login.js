@@ -3,8 +3,12 @@ import { React, useState } from 'react';
 import { Button } from 'react-native-web';
 import fetcher from '../model/fetcher';
 import { useAuth } from "../model/hooks/auth";
+
+import {AuthContext} from '../componants/context/AuthContext'
+import * as Keychain from 'react-native-keychain';
+import {AxiosContext} from '../componants/context/AxiosContext';
+
 import axios from 'axios';
-import deviceStorage from '../assets/services/deviceStorage';
 
 export default function Login() {
     const [username, setUsername] = useState('')
@@ -13,9 +17,51 @@ export default function Login() {
     const [errors, setErros] = useState(null);
 
     const [loadPageData, setloadPageData] = useState(true);
-    const [cookies] = useCookies(['Jwt']);
 
-    const { setSession, reRoute } = useAuth({ onlyAdmin: null, setloadPageData: setloadPageData })
+    //const [cookies] = useCookies(['Jwt']);
+
+    //const { setSession, reRoute } = useAuth({ onlyAdmin: null, setloadPageData: setloadPageData })
+
+
+    const authContext = useContext(AuthContext);
+    const {publicAxios} = useContext(AxiosContext);
+
+    const onLogin = async () => {
+        try {
+          const response = await publicAxios.post('/LoginApp', {
+            username,
+            password,
+          });
+    
+          const {accessToken, refreshToken} = response.data;
+          authContext.setAuthState({
+            accessToken,
+            refreshToken,
+            authenticated: true,
+          });
+
+
+          await Keychain.setGenericPassword(
+            'token',
+            JSON.stringify({
+              accessToken,
+              refreshToken,
+            }),
+          );
+        } catch (error) {
+          Alert.alert('Login Failed', error.response.data.message);
+        }
+      };
+    
+
+
+
+
+
+
+
+
+
 
 
 

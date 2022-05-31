@@ -1,6 +1,7 @@
 import {React , useContext} from "react";
 import {DashboardContext} from "./context"
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {BACKE_END_URL} from "@env"
 
 import {
   StyleSheet,
@@ -17,7 +18,6 @@ import {
 console.log(Platform.OS)
 
 //const URL = Platform.OS === 'web' ? 'http://127.0.0.1:8000': 'http://10.0.2.2:8000';
-const URL ='http://127.0.0.1:8000';
 //const URL ='http://10.0.2.2:8000';
  //'http://127.0.0.1:8000';
 
@@ -30,15 +30,15 @@ const ServiceCard = ({ data }) => {
 
 
 
-  const RenderRowThree = ({ item }) => (
-
-    <TouchableOpacity
+  const RenderRowThree = ({ item }) => {
+//console.log(`${BACKE_END_URL}/api/showPublicImge/${item.img_id}`)
+    return <TouchableOpacity
       key={item.id}
       style={stylesList.itemThreeContainer}
       onPress={() => openArticle(item)}
     >
       <View style={stylesList.itemThreeSubContainer}>
-        <Image source={{ uri: `${URL}/api/showPublicImge/${item.img_id}` }} style={stylesList.itemThreeImage} />
+        <Image source={{ uri: `${BACKE_END_URL}/api/showPublicImge/${item.img_id}` }} style={stylesList.itemThreeImage} />
         <View style={stylesList.itemThreeContent}>
           <Text style={stylesList.itemThreeBrand}>{item.user.username}</Text>
           <View>
@@ -68,8 +68,8 @@ const ServiceCard = ({ data }) => {
         </View>
       </View>
       <View style={stylesList.itemThreeHr} />
-    </TouchableOpacity>
-  );
+    </TouchableOpacity>;
+  };
   
   
   

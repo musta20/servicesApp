@@ -1,112 +1,47 @@
 
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import  { SWRConfig } from 'swr'
 
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Profile from "./componants/Profile";
-import Home from "./componants/Home";
-import Orders from "./componants/Orders";
-import Files from "./componants/Files";
-import Like from "./componants/Like";
-import Admin from './componants/admin'
 import { AuthProvider} from './componants/context/AuthContext';
 import { AxiosProvider } from './componants/context/AxiosContext';
-import { createStackNavigator } from '@react-navigation/stack';
+import Index from './index';
 
-
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet } from "react-native";
-import Order from './componants/PostOrder';
-import Login from './componants/login';
+
 //StyleSheet
-const Tab = createBottomTabNavigator();
 
-function MyTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          switch (route.name) {
-            case 'الرئيسية':
-              iconName = focused
-                ? 'md-home-sharp'
-                : 'home-outline';
-              break;
-            case 'بياناتي':
-              iconName = focused
-                ? 'user-circle'
-                : 'user-circle-o';
-              return <Icon name={iconName} size={size} color={color} />;
-
-              break;
-            case 'الطلبات':
-              iconName = focused
-                ? 'clipboard'
-                : 'clipboard-outline';
-              break;
-            case 'الملفات':
-              iconName = focused
-                ? 'documents'
-                : 'documents-outline';
-              break;
-
-            case 'المكاتب المفضلة':
-              iconName = focused
-                ? 'heart'
-                : 'heart-outline';
-              break;
-
-            default:
-              break;
-          }
-
-
-          // You can return any component that you like here!
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#198754',
-        tabBarInactiveTintColor: 'gray',
-      })}
-    >
-
-      <Tab.Screen name="الرئيسية" component={Home} />
-      <Tab.Screen name="الطلبات" component={Orders} />
-      <Tab.Screen name="الملفات" component={Files} />
-      <Tab.Screen name="المكاتب المفضلة" component={Like} />
-      <Tab.Screen name="بياناتي" component={Profile} />
-
-
-    </Tab.Navigator>
-  );
-}
-const Stack = createStackNavigator();
 
 export default function App() {
+  
   return (
-    <AuthProvider>
+    <SWRConfig
+  value={{
+    provider: () => new Map(),
+    isOnline() {
+      /* Customize the network state detector */
+      return true
+    },
+    isVisible() {
+      /* Customize the visibility state detector */
+      return true
+    },
+    initFocus(callback) {
+      /* Register the listener with your state provider */
+    },
+    initReconnect(callback) {
+      /* Register the listener with your state provider */
+    }
+  }}
+>
+<AuthProvider>
       <AxiosProvider>
-    <NavigationContainer style={styles.container.backgroundColor} >
-      <Stack.Navigator>
-{/*      
-      <Stack.Screen name="دخول" component={Login} />
-
- */}
-        <Stack.Screen
-         options={{headerShown: false}}
-          name="MyTabs"
-          component={MyTabs}
-        />
-
-<Stack.Screen name="Admin" component={Admin} />
-<Stack.Screen name="Order" component={Order} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Index />
     </AxiosProvider>
     </AuthProvider>
+    
+    
+    </SWRConfig>
+
 
   );
 }

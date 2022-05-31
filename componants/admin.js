@@ -1,4 +1,5 @@
 import { React , useContext } from "react";
+import {BACKE_END_URL} from "@env"
 
 import {
   StyleSheet,
@@ -11,22 +12,17 @@ import {
   Image
 } from 'react-native';
 
-//import { DashboardContext } from './context';
-
 
 export default function Admin({ route , navigation}) {
 
-  //const { navigation } = useContext(DashboardContext);
 
   const { item } = route.params.params
-  const URL = 'http://127.0.0.1:8000';
-  ///const URL ='http://10.0.2.2:8000';
-
+//console.log(`${BACKE_END_URL}/api/showPublicImge/${item.img_id}`)
   
   
   return (
     <View style={stylesList.itemTwoContent}>
-      <Image style={stylesList.itemTwoImage} source={{ uri: `${URL}/api/showPublicImge/${item.img_id}` }} />
+      <Image style={stylesList.itemTwoImage} source={{ uri: `${BACKE_END_URL}/api/showPublicImge/${item.img_id}` }} />
       <TouchableOpacity
         key={item.id}
         style={stylesList.userName}
@@ -222,4 +218,3 @@ const stylesList = StyleSheet.create({
     paddingVertical: 5,
   },
 });
-

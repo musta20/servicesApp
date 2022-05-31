@@ -9,7 +9,7 @@ import { DashboardContext } from './context'
 export default function HomeScreen({navigation}) {
 
   const { services , isLoding } =  getServices();
-  
+  console.log(`hi IAM THE HOOOOOMEEEEE`)
     return (
 <DashboardContext.Provider value={{ navigation }} >
 <ServiceCard  navigation={navigation} data={services}></ServiceCard>
@@ -25,7 +25,6 @@ export default function HomeScreen({navigation}) {
 
   const styles = StyleSheet.create({
     container: {
-      //flex: 1,
       backgroundColor: '#664d03',
   
     },
@@ -45,7 +44,7 @@ export default function HomeScreen({navigation}) {
   
 const getServices = ()=> {
   const { data, error } = useSWR({ url: '/api/services', method: 'GET', data: {} }, fetcher);
-  console.log(data)
+ 
   const page = !data || !{ data } ? [] : data.data
   return {
     services: page,

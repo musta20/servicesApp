@@ -2,7 +2,10 @@ import React, {createContext, useContext} from 'react';
 import axios from 'axios';
 import {AuthContext} from './AuthContext';
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import * as Keychain from 'react-native-keychain';
+//import * as Keychain from 'react-native-keychain';
+import * as SecureStore from 'expo-secure-store';
+
+import {BACKE_END_URL} from "@env"
 
 const AxiosContext = createContext();
 const {Provider} = AxiosContext;
@@ -11,11 +14,11 @@ const AxiosProvider = ({children}) => {
   const authContext = useContext(AuthContext);
 
   const authAxios = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: `${BACKE_END_URL}/api`,
   });
 
   const publicAxios = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: `${BACKE_END_URL}/api`,
   });
 
   authAxios.interceptors.request.use(
@@ -39,11 +42,13 @@ const AxiosProvider = ({children}) => {
     const options = {
       method: 'POST',
       data,
-      url: 'http://localhost:3001/api/refreshToken',
+      url: `${BACKE_END_URL}/api/refreshToken`,
     };
-
+    console.log(BACKE_END_URL)
+    console.log(options)
     return axios(options)
       .then(async tokenRefreshResponse => {
+
         failedRequest.response.config.headers.Authorization =
           'Bearer ' + tokenRefreshResponse.data.accessToken;
 
@@ -52,7 +57,7 @@ const AxiosProvider = ({children}) => {
           accessToken: tokenRefreshResponse.data.accessToken,
         });
 
-        await Keychain.setGenericPassword(
+        await SecureStore.setItemAsync(
           'token',
           JSON.stringify({
             accessToken: tokenRefreshResponse.data.accessToken,

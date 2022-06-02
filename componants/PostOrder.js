@@ -5,15 +5,17 @@ import {
   FlatList,
   SafeAreaView,
   Image,
+  Modal,
+  Pressable,
 } from "react-native";
-import {stylesList , styles} from "./Style/Global.Style"
-import * as DocumentPicker from 'expo-document-picker';
+import { stylesList, styles } from "./Style/Global.Style";
+import * as DocumentPicker from "expo-document-picker";
 //import DocumentPicker from 'react-native-document-picker';
 
-import { React, useState, useEffect , useContext } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import useSWR from "swr";
 import fetcher from "../model/fetcher";
-
+import FilesManger from "./FilesManger";
 import { AuthContext } from "./context/AuthContext";
 
 export default function Order({ route }) {
@@ -22,6 +24,11 @@ export default function Order({ route }) {
   const [FormFiles, setFormFiles] = useState([]);
   const [currentFile, setcurrentFile] = useState(0);
   const [RequestDes, setRequestDes] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [theSelectedImge, SetTheCureentImge] = useState(0);
+
+
+  
 
   const authContext = useContext(AuthContext);
 
@@ -30,32 +37,33 @@ export default function Order({ route }) {
   const { item } = route.params.params;
   const { data } = RequirementUploader(item.id);
 
-
   const FileInputs = ({ item }) => {
-  return  <View>
+    return (
       <View>
-        {item.is_required ? (
-          <Text 
-          > * الزامي
-          </Text>
-        ) : (
-          null
-        )}
-      </View>
-      <Text> {item.Title_upload}</Text>
-      <View>
-        <InputType
-          inputid={item.id}
-          FormFiles={
-            FormFiles[FormFiles.findIndex((ef) => ef.input == item.id)]
-          }
+        <View style={stylesList.buttonGroup}>
+          {item.is_required ? <Text> * الزامي</Text> : null}
+        </View>
+        <Text> {item.Title_upload}</Text>
+        <View style={stylesList.buttonGroup}>
+          <InputType
+            inputid={item.id}
+            FormFiles={
+              FormFiles[FormFiles.findIndex((ef) => ef.input == item.id)]
+            }
             uploadFile={uploadFile}
-          allimges={files}
-          removeImge={removeImge}
-        ></InputType>
-        <Button title="إضافة ملف محفوظ"></Button>
+            allimges={files}
+            removeImge={removeImge}
+          ></InputType>
+          <Button
+            style={stylesList.buttonGroup}
+            title="إضافة ملف محفوظ"
+            onPress={() =>{
+              setcurrentFile(item.id)
+              setModalVisible(true)}}
+          ></Button>
+        </View>
       </View>
-    </View>;
+    );
   };
 
   const RenderItem = ({ item }) => {
@@ -78,17 +86,12 @@ export default function Order({ route }) {
     setFormFiles(updateForm);
   }, [data]);
 
+  const uploadFile = async (inputid) => {
+    const file = await DocumentPicker.getDocumentAsync();
 
+    const photoFormData = new FormData();
 
-const uploadFile = async (inputid)=>{
-
-  const file= await DocumentPicker.getDocumentAsync();
-
- 
-
-  const photoFormData = new FormData();
-  
-/* lastModified: 1647110165254
+    /* lastModified: 1647110165254
 lastModifiedDate: Sat Mar 12 2022 21:36:05 GMT+0300 (Arabian Standard Time) {}
 name: "944051dYJqNYyFL.__AC_SY300_SX300_QL70_ML2_ (2).jpg"
 size: 6539
@@ -96,7 +99,7 @@ type: "image/jpeg"
 webkitRelativePath: ""
 [[Pro */
 
-/* Object {
+    /* Object {
   "mimeType": "image/jpeg",
   "name": "IMG-20220529-WA0000.jpg",
   "size": 14677,
@@ -104,73 +107,100 @@ webkitRelativePath: ""
   "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FservicesApp-51d4f529-cd9c-45ec-b4d5-57a80c655ef8/DocumentPicker/ee265f47-b5ab-41bb-941c-75a548c824ef.jpg",
 }
 */
-let objfile = {
-  name: file.name,
-  type: file.mimeType,
-  size: file.size,
+    let objfile = {
+      name: file.name,
+      type: file.mimeType,
+      size: file.size,
 
-  uri: Platform.OS === 'ios' ? 
-       file.uri.replace('file://', '')
-       : file.uri,
-}
+      uri: Platform.OS === "ios" ? file.uri.replace("file://", "") : file.uri,
+    };
 
-//console.log(' OBJECT FILE TO APPLOAD objfile')
-//console.log(objfile)
+    //console.log(' OBJECT FILE TO APPLOAD objfile')
+    //console.log(objfile)
 
-     photoFormData.append('file',objfile );  
+    photoFormData.append("file", objfile);
 
- // photoFormData.append('file', file.file );
- //console.log('photoFormData')
- //console.log(photoFormData)
+    // photoFormData.append('file', file.file );
+    //console.log('photoFormData')
+    //console.log(photoFormData)
 
-  await fetcher({
-    url: '/api/storeFromApp', method: "POST_FILE", data: {
-      body: photoFormData,
-      Jwt: authContext.authState.accessToken
-    }
+    await fetcher({
+      url: "/api/storeFromApp",
+      method: "POST_FILE",
+      data: {
+        body: photoFormData,
+        Jwt: authContext.authState.accessToken,
+      },
+    })
+      .then((ret) => {
+        console.log("THIS IS THE RESOPONE >>>>>>>>>>>>>>>>>>>>>>>>>>");
+        //console.log(ret)
+        //return
+        files.push(ret.file);
 
-  }).then(ret => {
-    console.log('THIS IS THE RESOPONE >>>>>>>>>>>>>>>>>>>>>>>>>>')
-//console.log(ret)
-//return
-    files.push(ret.file)
+        const updatFile = FormFiles.findIndex((item) => item.input == inputid);
 
-    const updatFile = FormFiles.findIndex(item => item.input == inputid)
+        const newupdateForm = [...FormFiles];
 
-    const newupdateForm = [...FormFiles]
+        newupdateForm[updatFile].value = ret.file.id;
 
-    newupdateForm[updatFile].value = ret.file.id
-
-    setFormFiles(newupdateForm)
-
-
-  }).catch(e=>{
-    console.log(e)
-  });
-
-
-
-}
+        setFormFiles(newupdateForm);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
 
-const removeImge = (indexFilw) => {
-  const updatFile = FormFiles.indexOf(indexFilw)
+  
+
+  const removeImge = (indexFilw) => {
+    const updatFile = FormFiles.indexOf(indexFilw);
+
+    const newupdateForm = [...FormFiles];
+
+    newupdateForm[updatFile].value = 0;
+
+    setFormFiles(newupdateForm);
+  };
+
+
+
+const closeMdeol = (imgid) => {
+
+  const updatFile = FormFiles.findIndex(item => item.input == currentFile)
 
   const newupdateForm = [...FormFiles]
 
-  newupdateForm[updatFile].value = 0
+  newupdateForm[updatFile].value = imgid
 
   setFormFiles(newupdateForm)
+
 }
 
-
-
+  const handelimgeselection = (id) => {
+    // console.log(id)
+ 
+     if (currentFile !== 0 && id !== 0) {
+ 
+ 
+       
+       setFile({ input: currentFile, value: id })
+ 
+     }
+   }
   return (
     <View style={stylesList.itemTwoContent}>
       <View style={stylesList.itemThreeContent} />
-      <View><Text style={stylesList.itemTwoTitle}>{item.Title}</Text></View>   
-      <View><Text style={stylesList.itemTwoSubTitle}>{item.Requirement}</Text></View> 
-      <View><Text style={stylesList.itemTwoPrice}>{"55 SAR"}</Text></View> 
+      <View>
+        <Text style={stylesList.itemTwoTitle}>{item.Title}</Text>
+      </View>
+      <View>
+        <Text style={stylesList.itemTwoSubTitle}>{item.Requirement}</Text>
+      </View>
+      <View>
+        <Text style={stylesList.itemTwoPrice}>{"55 SAR"}</Text>
+      </View>
       <View style={stylesList.itemThreeMetaContainer}>
         <View>
           <SafeAreaView>
@@ -180,8 +210,44 @@ const removeImge = (indexFilw) => {
               keyExtractor={(item) => item.id}
             />
           </SafeAreaView>
-        </View> 
         </View>
+      </View>
+      <Button
+          title="تقديم الطلب"
+
+          style={[stylesList.demoButton, {flexBasis: '47%'}]}
+          secondary
+          bordered
+          color={"#198754"}
+          rounded
+         // onPress={() => navigation.navigate('Order' ,{params: { item }})}
+          />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        //onRequestClose={() => {
+        //  setModalVisible(!modalVisible);
+      //  }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <FilesManger
+            selection={true}
+            closeMdeol={closeMdeol}
+            setModalVisible={setModalVisible}
+            />
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>
+              close
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -220,34 +286,26 @@ const InputType = ({
   allimges,
   i,
 }) => {
- 
   if (FormFiles !== undefined) {
-
-    
     if (FormFiles.value !== 0) {
       const { imge } =
         allimges[allimges.findIndex((item) => item.id == FormFiles.value)];
-      
+
       return (
-        <View>
-          <Image
-            source={{ uri: imge }}
-            style={stylesList.itemThreeImage}
+        <View style={stylesList.buttonGroup}>
+          <Image source={{ uri: imge }} style={stylesList.itemThreeImage} />
+          <Button
+            style={stylesList.buttonGroup}
+            onPress={() => removeImge(FormFiles)}
+            title="حذف الصورة"
           />
-          <Button onPress={()=>removeImge(FormFiles)} title="حذف الصورة" />
         </View>
       );
     }
   }
 
-  return <Button 
-  onPress={()=>uploadFile(inputid)} title="اختر الملف" />;
+  return <Button onPress={() => uploadFile(inputid)} title="اختر الملف" />;
 };
-
-
-
-
-
 
 //mobile
 /* Object {
@@ -272,9 +330,6 @@ webkitRelativePath: ""
 
  */
 
-
-
-
 /*   photoFormData.append('file', {
     name: file.file.name,
     type: file.type,
@@ -282,5 +337,3 @@ webkitRelativePath: ""
          file.uri.replace('file://', '')
          : file.uri,
   }); */
-
-

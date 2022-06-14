@@ -7,10 +7,11 @@ import {
   Image,
   Modal,
   Pressable,
+  TextInput
 } from "react-native";
 import { stylesList, styles } from "./Style/Global.Style";
 import * as DocumentPicker from "expo-document-picker";
-//import DocumentPicker from 'react-native-document-picker';
+import { useNavigation } from '@react-navigation/native';
 
 import { React, useState, useEffect, useContext } from "react";
 import useSWR from "swr";
@@ -19,16 +20,17 @@ import FilesManger from "./FilesManger";
 import { AuthContext } from "./context/AuthContext";
 
 export default function Order({ route }) {
-  //const [Files, setFile] = useState({});
   const [Files, setFile] = useState({});
   const [FormFiles, setFormFiles] = useState([]);
   const [currentFile, setcurrentFile] = useState(0);
   const [RequestDes, setRequestDes] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [theSelectedImge, SetTheCureentImge] = useState(0);
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
 
 
-  
+  const navigation = useNavigation();
+
 
   const authContext = useContext(AuthContext);
 
@@ -90,23 +92,6 @@ export default function Order({ route }) {
     const file = await DocumentPicker.getDocumentAsync();
 
     const photoFormData = new FormData();
-
-    /* lastModified: 1647110165254
-lastModifiedDate: Sat Mar 12 2022 21:36:05 GMT+0300 (Arabian Standard Time) {}
-name: "944051dYJqNYyFL.__AC_SY300_SX300_QL70_ML2_ (2).jpg"
-size: 6539
-type: "image/jpeg"
-webkitRelativePath: ""
-[[Pro */
-
-    /* Object {
-  "mimeType": "image/jpeg",
-  "name": "IMG-20220529-WA0000.jpg",
-  "size": 14677,
-  "type": "success",
-  "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FservicesApp-51d4f529-cd9c-45ec-b4d5-57a80c655ef8/DocumentPicker/ee265f47-b5ab-41bb-941c-75a548c824ef.jpg",
-}
-*/
     let objfile = {
       name: file.name,
       type: file.mimeType,
@@ -115,14 +100,7 @@ webkitRelativePath: ""
       uri: Platform.OS === "ios" ? file.uri.replace("file://", "") : file.uri,
     };
 
-    //console.log(' OBJECT FILE TO APPLOAD objfile')
-    //console.log(objfile)
-
     photoFormData.append("file", objfile);
-
-    // photoFormData.append('file', file.file );
-    //console.log('photoFormData')
-    //console.log(photoFormData)
 
     await fetcher({
       url: "/api/storeFromApp",
@@ -133,9 +111,6 @@ webkitRelativePath: ""
       },
     })
       .then((ret) => {
-        console.log("THIS IS THE RESOPONE >>>>>>>>>>>>>>>>>>>>>>>>>>");
-        //console.log(ret)
-        //return
         files.push(ret.file);
 
         const updatFile = FormFiles.findIndex((item) => item.input == inputid);
@@ -189,8 +164,76 @@ const closeMdeol = (imgid) => {
  
      }
    }
+
+
+
+   const PostRequest = () => {
+
+    if (!RequestDes && !item.is_des_req) {
+
+      setAlertMesssage([false, `الرجاء تعبئة وصف الطلب`])
+      return
+    }
+
+
+    try {
+
+      FormFiles.forEach(item => {
+        if (!item.value && item.is_required) {
+          setAlertMesssage([false, `الرجاء ارفاق ${item.name}`])
+
+          throw 'upliad err'
+        }
+
+      })
+    }
+
+    catch (e) {
+
+      return
+    }
+
+    fetcher({
+      url: '/api/Request', method: 'POST', data: {
+        combany_id: item.user.username,
+        Request_des: RequestDes,
+        Jwt:authContext.authState.accessToken,
+        Service_id: item.id,
+        FormFiles: FormFiles,
+
+      }
+    }).then(e => {
+
+      setAlertMesssage([true, `تم إضاف اليانات`])
+      setTimeout(() => {
+        navigation.navigate('MyTabs',{screen:'بياناتي'})
+      
+      }, 1000);
+
+
+    }).catch(err => {
+      setAlertMesssage([false, `حدث خطاء الرجاء المحاولة لاخقا`])
+
+    });
+
+  }
+
+
+
+
   return (
     <View style={stylesList.itemTwoContent}>
+             {AlertMesssage[0] == null ? null :
+          <View >
+            <Text >
+              {AlertMesssage[1]}
+
+            </Text>
+
+            <Button
+              onPress={() => setAlertMesssage([null, ''])}
+              title="close"></Button>
+          </View>}
       <View style={stylesList.itemThreeContent} />
       <View>
         <Text style={stylesList.itemTwoTitle}>{item.Title}</Text>
@@ -199,7 +242,11 @@ const closeMdeol = (imgid) => {
         <Text style={stylesList.itemTwoSubTitle}>{item.Requirement}</Text>
       </View>
       <View>
-        <Text style={stylesList.itemTwoPrice}>{"55 SAR"}</Text>
+          
+        <TextInput
+        style={styles.input}
+        onChangeText={(text)=>setRequestDes(text)}
+        value={RequestDes} />
       </View>
       <View style={stylesList.itemThreeMetaContainer}>
         <View>
@@ -220,15 +267,13 @@ const closeMdeol = (imgid) => {
           bordered
           color={"#198754"}
           rounded
-         // onPress={() => navigation.navigate('Order' ,{params: { item }})}
+          onPress={() => PostRequest()}
           />
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        //onRequestClose={() => {
-        //  setModalVisible(!modalVisible);
-      //  }}
+   
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
@@ -306,34 +351,3 @@ const InputType = ({
 
   return <Button onPress={() => uploadFile(inputid)} title="اختر الملف" />;
 };
-
-//mobile
-/* Object {
-  "mimeType": "image/jpeg",
-  "name": "IMG-20220529-WA0000.jpg",
-  "size": 14677,
-  "type": "success",
-  "uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FservicesApp-51d4f529-cd9c-45ec-b4d5-57a80c655ef8/DocumentPicker/ee265f47-b5ab-41bb-941c-75a548c824ef.jpg",
-}
-
-
-
-pc
-
-lastModified: 1647110165254
-lastModifiedDate: Sat Mar 12 2022 21:36:05 GMT+0300 (Arabian Standard Time) {}
-name: "944051dYJqNYyFL.__AC_SY300_SX300_QL70_ML2_ (2).jpg"
-size: 6539
-type: "image/jpeg"
-webkitRelativePath: ""
-[[Prototype]]: File
-
- */
-
-/*   photoFormData.append('file', {
-    name: file.file.name,
-    type: file.type,
-    uri: Platform.OS === 'ios' ? 
-         file.uri.replace('file://', '')
-         : file.uri,
-  }); */

@@ -9,7 +9,6 @@ import { DashboardContext } from './context'
 export default function HomeScreen({navigation}) {
 
   const { services , isLoding } =  getServices();
-  console.log(`hi IAM THE HOOOOOMEEEEE`)
     return (
 <DashboardContext.Provider value={{ navigation }} >
 <ServiceCard  navigation={navigation} data={services}></ServiceCard>

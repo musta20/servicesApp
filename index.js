@@ -9,6 +9,7 @@ import Orders from "./componants/Orders";
 import Files from "./componants/Files";
 import Like from "./componants/Like";
 import Admin from "./componants/admin";
+import Combanypage from "./componants/combanypage";
 //import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 
@@ -81,8 +82,7 @@ export default function Index() {
     try {
       const value = await SecureStore.getItemAsync('token');
       const jwt = JSON.parse(value);
-      console.log(`VALUR VALUEV VALUE VVVVVVVVVVVVVV `)
-      console.log(jwt)
+
 
 console.log(value)
       authContext.setAuthState({
@@ -107,18 +107,6 @@ console.log(value)
     loadJWT();
   }, [loadJWT]);
 
-  
-  
-  
-  
-  
-  //if (status === "loading")   return <View><Text>loading</Text> </View>
-    
-  //if (authContext?.authState?.authenticated)  
-  
- // {
-
-  
 
   return <NavigationContainer style={styles.container.backgroundColor}>
       <Stack.Navigator>
@@ -137,6 +125,7 @@ console.log(value)
 
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="Order" component={Order} />
+        <Stack.Screen name="Combanypage" component={Combanypage} />
         </>
         )
       }

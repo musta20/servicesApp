@@ -14,12 +14,7 @@ import {
   TouchableOpacity,
   Image
 } from "react-native";
-//import LoadImge from "./LoadImge";
-console.log(Platform.OS)
 
-//const URL = Platform.OS === 'web' ? 'http://127.0.0.1:8000': 'http://10.0.2.2:8000';
-//const URL ='http://10.0.2.2:8000';
- //'http://127.0.0.1:8000';
 
 const ServiceCard = ({ data }) => {
   const Stack = createNativeStackNavigator();

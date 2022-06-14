@@ -7,11 +7,11 @@ import {
   Image,
   Modal,
   Pressable,
-  TextInput
+  TextInput,
 } from "react-native";
 import { stylesList, styles } from "./Style/Global.Style";
 import * as DocumentPicker from "expo-document-picker";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 import { React, useState, useEffect, useContext } from "react";
 import useSWR from "swr";
@@ -26,11 +26,9 @@ export default function Order({ route }) {
   const [RequestDes, setRequestDes] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [theSelectedImge, SetTheCureentImge] = useState(0);
-  const [AlertMesssage, setAlertMesssage] = useState([null, ""])
-
+  const [AlertMesssage, setAlertMesssage] = useState([null, ""]);
 
   const navigation = useNavigation();
-
 
   const authContext = useContext(AuthContext);
 
@@ -59,9 +57,10 @@ export default function Order({ route }) {
           <Button
             style={stylesList.buttonGroup}
             title="إضافة ملف محفوظ"
-            onPress={() =>{
-              setcurrentFile(item.id)
-              setModalVisible(true)}}
+            onPress={() => {
+              setcurrentFile(item.id);
+              setModalVisible(true);
+            }}
           ></Button>
         </View>
       </View>
@@ -126,9 +125,6 @@ export default function Order({ route }) {
       });
   };
 
-
-  
-
   const removeImge = (indexFilw) => {
     const updatFile = FormFiles.indexOf(indexFilw);
 
@@ -139,101 +135,76 @@ export default function Order({ route }) {
     setFormFiles(newupdateForm);
   };
 
+  const closeMdeol = (imgid) => {
+    const updatFile = FormFiles.findIndex((item) => item.input == currentFile);
 
+    const newupdateForm = [...FormFiles];
 
-const closeMdeol = (imgid) => {
+    newupdateForm[updatFile].value = imgid;
 
-  const updatFile = FormFiles.findIndex(item => item.input == currentFile)
-
-  const newupdateForm = [...FormFiles]
-
-  newupdateForm[updatFile].value = imgid
-
-  setFormFiles(newupdateForm)
-
-}
+    setFormFiles(newupdateForm);
+  };
 
   const handelimgeselection = (id) => {
     // console.log(id)
- 
-     if (currentFile !== 0 && id !== 0) {
- 
- 
-       
-       setFile({ input: currentFile, value: id })
- 
-     }
-   }
 
-
-
-   const PostRequest = () => {
-
-    if (!RequestDes && !item.is_des_req) {
-
-      setAlertMesssage([false, `الرجاء تعبئة وصف الطلب`])
-      return
+    if (currentFile !== 0 && id !== 0) {
+      setFile({ input: currentFile, value: id });
     }
+  };
 
+  const PostRequest = () => {
+    if (!RequestDes && !item.is_des_req) {
+      setAlertMesssage([false, `الرجاء تعبئة وصف الطلب`]);
+      return;
+    }
 
     try {
-
-      FormFiles.forEach(item => {
+      FormFiles.forEach((item) => {
         if (!item.value && item.is_required) {
-          setAlertMesssage([false, `الرجاء ارفاق ${item.name}`])
+          setAlertMesssage([false, `الرجاء ارفاق ${item.name}`]);
 
-          throw 'upliad err'
+          throw "upliad err";
         }
-
-      })
-    }
-
-    catch (e) {
-
-      return
+      });
+    } catch (e) {
+      return;
     }
 
     fetcher({
-      url: '/api/Request', method: 'POST', data: {
+      url: "/api/Request",
+      method: "POST",
+      data: {
         combany_id: item.user.username,
         Request_des: RequestDes,
-        Jwt:authContext.authState.accessToken,
+        Jwt: authContext.authState.accessToken,
         Service_id: item.id,
         FormFiles: FormFiles,
-
-      }
-    }).then(e => {
-
-      setAlertMesssage([true, `تم إضاف اليانات`])
-      setTimeout(() => {
-        navigation.navigate('MyTabs',{screen:'بياناتي'})
-      
-      }, 1000);
-
-
-    }).catch(err => {
-      setAlertMesssage([false, `حدث خطاء الرجاء المحاولة لاخقا`])
-
-    });
-
-  }
-
-
-
+      },
+    })
+      .then((e) => {
+        setAlertMesssage([true, `تم إضاف اليانات`]);
+        setTimeout(() => {
+          navigation.navigate("MyTabs", { screen: "بياناتي" });
+        }, 1000);
+      })
+      .catch((err) => {
+        setAlertMesssage([false, `حدث خطاء الرجاء المحاولة لاخقا`]);
+      });
+  };
 
   return (
     <View style={stylesList.itemTwoContent}>
-             {AlertMesssage[0] == null ? null :
-          <View >
-            <Text >
-              {AlertMesssage[1]}
+      {AlertMesssage[0] == null ? null : (
+        <View>
+          <Text>{AlertMesssage[1]}</Text>
 
-            </Text>
-
-            <Button
-              onPress={() => setAlertMesssage([null, ''])}
-              title="close"></Button>
-          </View>}
+          <Button
+            onPress={() => setAlertMesssage([null, ""])}
+            title="close"
+          ></Button>
+        </View>
+      )}
       <View style={stylesList.itemThreeContent} />
       <View>
         <Text style={stylesList.itemTwoTitle}>{item.Title}</Text>
@@ -242,11 +213,11 @@ const closeMdeol = (imgid) => {
         <Text style={stylesList.itemTwoSubTitle}>{item.Requirement}</Text>
       </View>
       <View>
-          
         <TextInput
-        style={styles.input}
-        onChangeText={(text)=>setRequestDes(text)}
-        value={RequestDes} />
+          style={styles.input}
+          onChangeText={(text) => setRequestDes(text)}
+          value={RequestDes}
+        />
       </View>
       <View style={stylesList.itemThreeMetaContainer}>
         <View>
@@ -260,35 +231,27 @@ const closeMdeol = (imgid) => {
         </View>
       </View>
       <Button
-          title="تقديم الطلب"
-
-          style={[stylesList.demoButton, {flexBasis: '47%'}]}
-          secondary
-          bordered
-          color={"#198754"}
-          rounded
-          onPress={() => PostRequest()}
-          />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-   
-      >
+        title="تقديم الطلب"
+        style={[stylesList.demoButton, { flexBasis: "47%" }]}
+        secondary
+        bordered
+        color={"#198754"}
+        rounded
+        onPress={() => PostRequest()}
+      />
+      <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <FilesManger
-            selection={true}
-            closeMdeol={closeMdeol}
-            setModalVisible={setModalVisible}
+              selection={true}
+              closeMdeol={closeMdeol}
+              setModalVisible={setModalVisible}
             />
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.textStyle}>
-              close
-              </Text>
+              <Text style={styles.textStyle}>close</Text>
             </Pressable>
           </View>
         </View>

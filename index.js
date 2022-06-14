@@ -10,6 +10,8 @@ import Files from "./componants/Files";
 import Like from "./componants/Like";
 import Admin from "./componants/admin";
 import Combanypage from "./componants/combanypage";
+import MessageBox from "./componants/MessageBox";
+
 //import * as Keychain from 'react-native-keychain';
 import * as SecureStore from 'expo-secure-store';
 
@@ -122,10 +124,10 @@ console.log(value)
           component={MyTabs}
 
         />
-
         <Stack.Screen name="Admin" component={Admin} />
         <Stack.Screen name="Order" component={Order} />
         <Stack.Screen name="Combanypage" component={Combanypage} />
+        <Stack.Screen name="MessageBox" component={MessageBox} />
         </>
         )
       }
